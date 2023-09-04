@@ -19,21 +19,36 @@ export class App extends Component {
 
   handlerChange = event => {
     this.setState({filter: event.target.value});
-    //console.log(event.target.value);
   };
 
   addContact = newContact => {
-    console.log(newContact);
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, { id: nanoid(), ...newContact }],
-    }))
+
+    const isContact = this.state.contacts.some(contact => contact.name === newContact.name);
+
+    if (!isContact) {
+      this.setState(prevState => ({
+       contacts: [...prevState.contacts, { id: nanoid(), ...newContact }],
+     }))
+    } else {
+      alert(`${newContact.name} is already in contacts`)
+    }
   };
+
+  deleteContact = contactId => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId)
+    }));
+  };
+
+  getVisibleContact = () => {
+    const normalizedFilter = this.state.filter.toLowerCase();
+    const visibleContacts = this.state.contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
+    return visibleContacts;
+  }
 
   render() {
 
-    const normalizedFilter = this.state.filter.toLowerCase();
-
-    const visibleContacts = this.state.contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter))
+    const visibleItems = this.getVisibleContact();
 
     return(
       <div>
@@ -41,7 +56,7 @@ export class App extends Component {
         <ContactForm onAdd={this.addContact} />
         <h2>Contacts</h2>
         <Filter onChange={this.handlerChange} value={this.state.filter}/>
-        <ContactList items={visibleContacts} />
+        <ContactList items={visibleItems} onDelete={this.deleteContact} />
     </div>
   );
   }

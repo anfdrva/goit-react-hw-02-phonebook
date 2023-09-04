@@ -20,8 +20,9 @@ export const ContactForm = ({onAdd}) => {
                 number: ""
             }}
         validationSchema={SignupSchema}
-            onSubmit={values => {
+            onSubmit={(values, actions) => {
                 onAdd(values);
+                actions.resetForm();
         }}
       >
             <Form>
